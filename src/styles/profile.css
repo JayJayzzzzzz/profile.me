@@ -121,6 +121,7 @@ main {
 .link a {
   display: flex;
   transition: color 0.1s ease-out;
+  filter: drop-shadow(0 0 5px var(--highlight-glow));
 }
 .link a:hover {
   color: var(--white);

@@ -3,7 +3,8 @@
 :root {
   --white: #ccc;
   --gray: #333;
-  --highlight: #ff0052;
+  --highlight: #7c3aed;
+  --highlight-glow: rgba(150, 90, 255, 0.55);
   --bg-color: #060606;
   --main-font: "Roboto", system-ui, sans-serif;
   --highlight-font: "Roboto Flex", "Roboto", system-ui, sans-serif;
@@ -30,6 +31,7 @@ body {
 a {
   color: var(--highlight);
   text-decoration: none;
+  text-shadow: 0 0 9px var(--highlight-glow);
 }
 
 h1,
