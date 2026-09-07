@@ -1,0 +1,32 @@
+---
+import { ageFrom } from "../config";
+import { links, icons } from "../data/social-links";
+
+// Rendered server-side; refreshed client-side by src/scripts/age.ts.
+const age = ageFrom(new Date());
+---
+
+<div id="rotating-card">
+  <div id="card">
+    <h1>JayJayzzzzzz</h1>
+    <p>
+      It is <b id="clock">--:--</b> for me in Wiesbaden, Germany.{" "}
+      <span id="age">{age}</span>&nbsp;years old. IT apprentice training as an
+      application developer at{" "}
+      <a href="https://www.datagraphis.de/" rel="noopener noreferrer" target="_blank">Datagraphis</a>.
+    </p>
+    <ul>
+      {
+        links.map((link) => (
+          <li class="link">
+            <a href={link.href} aria-label={link.name} rel="noopener noreferrer" target="_blank">
+              <svg viewBox={icons[link.icon].vb} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path fill="currentColor" d={icons[link.icon].d} />
+              </svg>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,237 @@
+/*
+ * The profile UI: the tilted photo, the bio card hidden behind it, and the
+ * hover/focus "unfold" that slides the card out. Cloned from osumatrix.me.
+ */
+
+/* --- WebGL cursor-trail canvas ------------------------------------------- */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+/* --- Blend-mode cursor -------------------------------------------------- */
+.pointer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 2;
+  transition: 0.3s transform cubic-bezier(0, 0.68, 0.43, 1.02);
+}
+
+/* --- Layout ----------------------------------------------------------- */
+main {
+  display: flex;
+  justify-content: right;
+  width: 460px;
+  transition: all 0.6s;
+}
+
+#rotating-image {
+  z-index: 1;
+  transform: rotate(4deg);
+  transition: all 0.6s;
+}
+
+#avatar {
+  position: fixed;
+  width: 400px;
+  height: auto;
+  margin-top: -50px;
+  margin-left: -80px;
+  border-radius: 20px;
+  transform: rotate(4deg);
+  cursor: pointer;
+  transition: all 0.6s;
+  animation: float 3s ease-in-out infinite;
+}
+#avatar:hover {
+  filter: brightness(1.3);
+}
+
+#rotating-card {
+  transform: rotate(-4deg) skew(5deg) skewY(-5deg);
+  transition: all 0.6s;
+}
+
+#card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 400px;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 15px;
+  background: #1313138f;
+  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(32px);
+  filter: blur(5px) saturate(10) grayscale(1);
+  opacity: 0.4;
+  transition: all 0.6s;
+  animation: float 2.9s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+#card h1 {
+  font-size: 1.9rem;
+  line-height: 1.05;
+  letter-spacing: 0.1rem;
+  overflow-wrap: anywhere;
+}
+
+#card p {
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+#card p,
+#card p * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+#card b {
+  color: var(--white);
+  font-weight: 700;
+}
+
+/* --- Link row -------------------------------------------------------- */
+#card ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 2rem;
+  list-style: none;
+}
+
+.link {
+  display: flex;
+  transition: transform 0.1s ease-out;
+}
+.link:hover {
+  transform: scale(1.3);
+}
+.link a {
+  display: flex;
+  transition: color 0.1s ease-out;
+}
+.link a:hover {
+  color: var(--white);
+}
+.link a:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+.link svg {
+  width: 1em;
+  height: 1em;
+  overflow: visible;
+}
+
+/* --- The unfold (hover, and keyboard focus) ------------------------- */
+main:hover,
+main:focus-within {
+  margin-right: 350px;
+}
+main:hover #card,
+main:focus-within #card {
+  filter: none;
+  opacity: 1;
+  margin-right: -330px;
+}
+main:hover #rotating-card,
+main:focus-within #rotating-card {
+  transform: rotate(6deg) scale(1.1);
+}
+main:hover #avatar,
+main:focus-within #avatar {
+  filter: blur(5px) saturate(10) brightness(0.6);
+  margin-left: -450px;
+}
+main:hover #rotating-image,
+main:focus-within #rotating-image {
+  transform: rotate(-6deg) translateY(-50px) scale(0.9);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* --- Mobile: unstack the illusion, show everything plainly ---------- */
+@media (max-width: 505px) {
+  .pointer {
+    display: none;
+  }
+
+  main {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 1.5rem 1rem 3rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    transform: none !important;
+  }
+
+  #rotating-image,
+  #rotating-card {
+    transform: none !important;
+  }
+
+  #avatar {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 0 1.5rem !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none;
+  }
+
+  #card {
+    min-width: 0;
+    max-width: 340px;
+    margin: 0 !important;
+    padding: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    filter: none !important;
+    opacity: 1;
+    animation: none;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+/* --- Reduced motion: keep the reveal, drop the drift --------------- */
+@media (prefers-reduced-motion: reduce) {
+  #avatar,
+  #card {
+    animation: none !important;
+  }
+  main,
+  #rotating-image,
+  #rotating-card,
+  #card,
+  #avatar,
+  .pointer,
+  .link,
+  .link a {
+    transition-duration: 0.001s !important;
+  }
+}

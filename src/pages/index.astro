@@ -1,0 +1,56 @@
+---
+import "../styles/global.css";
+import "../styles/profile.css";
+import ProfileCard from "../components/ProfileCard.astro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Fallback icon; src/scripts/discord-avatar.ts swaps in the live Discord avatar. -->
+    <link rel="icon" type="image/svg+xml" href="/avatar-fallback.svg" id="favicon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta
+      name="description"
+      content="JayJayzzzzzz — IT apprentice (application development), based in Wiesbaden, Germany."
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#060606" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Flex:opsz,wght@8..144,900&display=swap"
+    />
+    <title>JayJayzzzzzz</title>
+  </head>
+
+  <body>
+    <div class="pointer" id="pointer" aria-hidden="true"></div>
+
+    <main>
+      <div id="rotating-image">
+        <img
+          id="avatar"
+          src="/avatar-fallback.svg"
+          alt="JayJayzzzzzz's profile picture"
+          width="400"
+          height="400"
+          decoding="async"
+        />
+      </div>
+
+      <ProfileCard />
+    </main>
+
+    <!-- WebGL cursor trail: three.js (pinned), then the effect. Both are plain globals. -->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
+    <script is:inline src="/cursor-trail/effect.js"></script>
+
+    <!-- Page behaviour, bundled by Astro from src/scripts/. -->
+    <script>
+      import "../scripts/main";
+    </script>
+  </body>
+</html>

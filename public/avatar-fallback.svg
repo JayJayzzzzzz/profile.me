@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Placeholder profile picture">
+  <rect width="400" height="400" rx="20" fill="#0b0b0b"/>
+  <rect x="10" y="10" width="380" height="380" rx="14" fill="none" stroke="#ff0052" stroke-opacity="0.45" stroke-width="2"/>
+  <text x="200" y="212" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Roboto Flex','Roboto',system-ui,sans-serif" font-weight="900"
+        font-size="230" letter-spacing="6" fill="#ff0052">J</text>
+</svg>

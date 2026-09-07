@@ -1,0 +1,73 @@
+/* Design tokens, resets and document-level styling. */
+
+:root {
+  --white: #ccc;
+  --gray: #333;
+  --highlight: #ff0052;
+  --bg-color: #060606;
+  --main-font: "Roboto", system-ui, sans-serif;
+  --highlight-font: "Roboto Flex", "Roboto", system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+  font-family: var(--main-font);
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--white);
+}
+
+a {
+  color: var(--highlight);
+  text-decoration: none;
+}
+
+h1,
+h2 {
+  font-family: var(--highlight-font);
+  font-weight: 900;
+  letter-spacing: 0.2rem;
+}
+
+::selection {
+  color: #000;
+  background: var(--highlight);
+}
+
+::-webkit-scrollbar {
+  width: 0.3rem;
+}
+::-webkit-scrollbar-track {
+  background: none;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 1rem;
+  background: var(--gray);
+}
+
+/* Desktop: pin the viewport so the unfold animation can overflow off-screen. */
+@media (min-width: 506px) {
+  html,
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* Mobile: plain vertical document, slightly lifted background. */
+@media (max-width: 505px) {
+  body {
+    display: block;
+    background-color: #151515;
+  }
+}
