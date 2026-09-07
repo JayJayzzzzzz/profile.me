@@ -44,3 +44,22 @@ avatar also requires joining [discord.gg/lanyard](https://discord.gg/lanyard).
 | `npm run preview` | Preview the build locally                   |
 
 Requires Node `>=22.12.0`.
+
+## Deployment
+
+Every push to `main` is built and deployed to GitHub Pages by
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) (Astro's official
+`withastro/action`). The site is served from the custom domain
+[jayjayzzzzzz.me](https://jayjayzzzzzz.me) via [public/CNAME](public/CNAME).
+
+One-time setup:
+
+1. **Settings → Pages → Build and deployment → Source: GitHub Actions**
+2. **Settings → Pages → Custom domain: `jayjayzzzzzz.me`** (enable "Enforce HTTPS"
+   once the certificate is issued)
+3. DNS at the registrar for the apex domain `jayjayzzzzzz.me`:
+   - `A` records → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - `AAAA` records → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+
+`site` in [astro.config.mjs](astro.config.mjs) is set to the custom domain; `base`
+stays `/`.
