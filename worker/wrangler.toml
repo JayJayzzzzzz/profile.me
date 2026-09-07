@@ -1,0 +1,27 @@
+# Cloudflare Worker that proxies the APIs needing a secret key.
+# Deploy:  cd worker && npm install && npx wrangler deploy
+# Then put the deployed URL in ../src/config.ts → WORKER_ENDPOINT.
+
+name = "profile-me-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[observability]
+enabled = true
+
+# Non-secret configuration — edit freely.
+# ALLOWED_ORIGIN: comma-separated allowlist. localhost entries let `npm run dev`
+# reach the deployed worker; drop them once you're done testing if you like.
+[vars]
+ALLOWED_ORIGIN = "https://jayjayzzzzzz.me,http://localhost:4321,http://127.0.0.1:4321"
+CACHE_SECONDS = "300"
+OSU_USER_ID = "20094442"
+STEAM_ID = "jayjayzzzzzz"          # 64-bit id or vanity name; both work
+
+# Secrets — never put these here. Set each with:
+#   npx wrangler secret put OSU_CLIENT_ID
+#   npx wrangler secret put OSU_CLIENT_SECRET
+#   npx wrangler secret put STEAM_API_KEY
+#   npx wrangler secret put SPOTIFY_CLIENT_ID
+#   npx wrangler secret put SPOTIFY_CLIENT_SECRET
+#   npx wrangler secret put SPOTIFY_REFRESH_TOKEN

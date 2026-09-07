@@ -1,6 +1,7 @@
 /** Keeps `#clock` showing the current wall-clock time where JayJayzzzzzz lives. */
+import { LOCATION } from "../config";
 
-const TIME_ZONE = "Europe/Berlin";
+const TIME_ZONE = LOCATION.timeZone;
 const REFRESH_MS = 15_000;
 
 export function initClock(): void {

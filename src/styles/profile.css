@@ -4,28 +4,15 @@
  */
 
 /* --- WebGL cursor-trail canvas ------------------------------------------- */
-canvas {
+#webgl-trail {
   position: fixed;
   top: 0;
   left: 0;
   z-index: -1;
 }
 
-/* --- Blend-mode cursor -------------------------------------------------- */
-.pointer {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 40px;
-  height: 40px;
-  margin: -20px 0 0 -20px;
-  border-radius: 50%;
-  background: #fff;
-  mix-blend-mode: difference;
-  pointer-events: none;
-  z-index: 2;
-  transition: 0.3s transform cubic-bezier(0, 0.68, 0.43, 1.02);
-}
+/* The blend-mode cursor and every alternative from the picker live in
+   src/styles/cursor.css / src/scripts/cursor.ts. */
 
 /* --- Layout ----------------------------------------------------------- */
 main {
@@ -174,7 +161,10 @@ main:focus-within #rotating-image {
 
 /* --- Mobile: unstack the illusion, show everything plainly ---------- */
 @media (max-width: 505px) {
-  .pointer {
+  #cursor-host,
+  #cursor-fx,
+  #cursor-fxb,
+  #cursor-toggle {
     display: none;
   }
 
@@ -230,7 +220,6 @@ main:focus-within #rotating-image {
   #rotating-card,
   #card,
   #avatar,
-  .pointer,
   .link,
   .link a {
     transition-duration: 0.001s !important;

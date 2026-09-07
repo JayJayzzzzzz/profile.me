@@ -1,0 +1,7 @@
+# Copy to .dev.vars (gitignored) for `wrangler dev`. Do not commit real values.
+OSU_CLIENT_ID=
+OSU_CLIENT_SECRET=
+STEAM_API_KEY=
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+SPOTIFY_REFRESH_TOKEN=

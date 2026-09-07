@@ -1,0 +1,442 @@
+/*
+ * Generic modal panel shared by the GitHub, osu! and Steam link icons
+ * (src/scripts/panel.ts). Same near-black glass and violet accent as the rest
+ * of the page; the Discord icon keeps its own bespoke popout.
+ */
+
+.panel-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.62);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.panel-backdrop[data-open] {
+  opacity: 1;
+}
+
+body.panel-open {
+  overflow: hidden;
+}
+body.panel-open #cursor-host,
+body.panel-open #cursor-fx,
+body.panel-open #cursor-fxb,
+body.panel-open #cursor-toggle,
+body.panel-open #spotlight {
+  display: none;
+}
+
+.panel {
+  position: relative;
+  width: 420px;
+  max-width: 100%;
+  max-height: calc(100vh - 2rem);
+  overflow: hidden auto;
+  padding: 1.6rem;
+  border-radius: 18px;
+  border: 1px solid rgba(150, 90, 255, 0.22);
+  background: rgba(14, 13, 18, 0.92);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.6),
+    0 0 40px var(--highlight-glow);
+  color: var(--white);
+  transform: translateY(8px) scale(0.97);
+  opacity: 0;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+.panel-backdrop[data-open] .panel {
+  transform: none;
+  opacity: 1;
+}
+.panel,
+.panel * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+.panel:focus {
+  outline: none;
+}
+
+.panel-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.panel-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.panel-note {
+  padding: 2rem 0.5rem;
+  text-align: center;
+  color: #8a8a92;
+}
+.panel-note a {
+  color: var(--highlight);
+}
+
+/* --- Header --- */
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.1rem;
+  padding-right: 2rem;
+}
+.panel-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+  border: 2px solid var(--highlight);
+}
+.panel-id {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.panel-id b {
+  font-size: 1.05rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.panel-id span {
+  font-size: 0.8rem;
+  color: #8a8a92;
+}
+.panel-flag {
+  width: 18px;
+  height: auto;
+  vertical-align: -2px;
+  border-radius: 2px;
+}
+.panel-bio {
+  margin-bottom: 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #b6b6be;
+  overflow-wrap: anywhere;
+}
+
+/* --- Stat grid --- */
+.panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.7rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+.stat b {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+.stat b i {
+  margin-left: 2px;
+  font-size: 0.7rem;
+  font-style: normal;
+  color: var(--highlight);
+}
+.stat span {
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #8a8a92;
+}
+
+/* --- Level / progress bar --- */
+.panel-level {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  font-size: 0.75rem;
+  color: #8a8a92;
+}
+.bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.bar > i {
+  display: block;
+  height: 100%;
+  background: var(--highlight);
+  box-shadow: 0 0 10px var(--highlight-glow);
+}
+
+/* --- osu! grades --- */
+.panel-grades {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  margin-bottom: 1.1rem;
+}
+.grade {
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+.grade-ssh,
+.grade-ss {
+  color: #ffd84d;
+}
+.grade-sh,
+.grade-s {
+  color: #6ee0ff;
+}
+.grade-a {
+  color: #7ee787;
+}
+.grade-n {
+  margin-right: 0.4rem;
+  font-size: 0.8rem;
+  color: #8a8a92;
+}
+
+/* --- Sections & rows --- */
+.panel-section {
+  margin-bottom: 1.1rem;
+}
+.panel-section h3 {
+  margin-bottom: 0.5rem;
+  font-family: var(--main-font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a8a92;
+}
+.panel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem;
+  border-radius: 9px;
+  color: var(--white);
+  text-shadow: none;
+  transition: background 0.12s ease;
+}
+a.panel-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.panel-row-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex: none;
+  background: rgba(255, 255, 255, 0.06);
+}
+.panel-row-rank {
+  width: 28px;
+  font-weight: 800;
+  color: var(--highlight);
+  flex: none;
+  text-align: center;
+}
+.panel-row-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.panel-row-main b {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.panel-row-main span {
+  font-size: 0.76rem;
+  color: #8a8a92;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.panel-row-meta {
+  margin-left: auto;
+  flex: none;
+  font-size: 0.75rem;
+  color: #8a8a92;
+}
+
+/* --- GitHub contribution calendar --- */
+.gh-calendar {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3px;
+  overflow-x: auto;
+}
+.gh-calendar i {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.gh-calendar i[data-level="1"] {
+  background: color-mix(in srgb, var(--highlight) 30%, transparent);
+}
+.gh-calendar i[data-level="2"] {
+  background: color-mix(in srgb, var(--highlight) 55%, transparent);
+}
+.gh-calendar i[data-level="3"] {
+  background: color-mix(in srgb, var(--highlight) 78%, transparent);
+}
+.gh-calendar i[data-level="4"] {
+  background: var(--highlight);
+}
+
+/* --- Now playing / in game hero --- */
+.sp-now {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  margin-bottom: 1.1rem;
+  padding: 0.7rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--white);
+  text-shadow: none;
+}
+.sp-now.playing {
+  background: color-mix(in srgb, var(--highlight) 16%, transparent);
+  box-shadow: inset 0 0 0 1px var(--highlight-glow);
+}
+.sp-now > img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex: none;
+}
+.sp-now .steam-hero {
+  width: 120px;
+  height: 56px;
+}
+.sp-now-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+.sp-now-info b {
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-now-info > span {
+  font-size: 0.8rem;
+  color: #b6b6be;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-now-label {
+  font-size: 0.65rem !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--highlight) !important;
+}
+.sp-now .bar {
+  margin-top: 5px;
+}
+
+/* --- Top artists row --- */
+.sp-artists {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+.sp-artist {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: var(--white);
+  text-shadow: none;
+  font-size: 0.72rem;
+  text-align: center;
+}
+.sp-artist img,
+.sp-artist-img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+}
+.sp-artist span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+a.sp-artist:hover span {
+  color: var(--highlight);
+}
+
+/* --- Footer link --- */
+.panel-link {
+  display: block;
+  margin-top: 0.4rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  color: var(--highlight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-backdrop,
+  .panel {
+    transition-duration: 0.001s !important;
+  }
+}
+
+@media (max-width: 460px) {
+  .panel {
+    width: 100%;
+  }
+  .panel-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

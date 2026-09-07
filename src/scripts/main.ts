@@ -1,12 +1,30 @@
 /** Entry point for the page's client-side behaviour. */
-import { initPointer } from "./pointer";
+import { initAccent } from "./accent";
+import { initCursor } from "./cursor";
 import { initClock } from "./clock";
 import { initAge } from "./age";
+import { initWeather } from "./weather";
 import { initDiscordAvatar } from "./discord-avatar";
 import { initDiscordProfile } from "./discord-profile";
+import { initSpotify } from "./spotify";
+import { initGithub } from "./github";
+import { initOsu } from "./osu";
+import { initSteam } from "./steam";
+import { initShortcuts } from "./shortcuts";
+import { initKonami } from "./konami";
+import { initServiceWorker } from "./sw";
 
-initPointer();
+initAccent();
+initCursor();
 initClock();
 initAge();
+initWeather();
 initDiscordAvatar();
 initDiscordProfile();
+initSpotify();
+initGithub();
+initOsu();
+initSteam();
+initShortcuts();
+initKonami();
+initServiceWorker();

@@ -1,0 +1,187 @@
+/*
+ * Cursor + trail switcher — see src/scripts/cursor.ts.
+ * The WebGL trail canvas (#webgl-trail) is styled in profile.css; these are the
+ * 2-D layers, the cursor heads, and the little picker in the top-right corner.
+ */
+
+#cursor-fxb {
+  position: fixed;
+  inset: 0;
+  z-index: -1; /* ambient trails sit behind the page, like the shader */
+  pointer-events: none;
+}
+#cursor-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 6; /* crisp trails that fully redraw every frame sit in front */
+  pointer-events: none;
+}
+#cursor-host {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+#cursor-host > * {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+#cursor-host > .cur-blend {
+  mix-blend-mode: difference;
+}
+
+#spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 150px at var(--sx, 50%) var(--sy, 50%),
+    transparent 0,
+    transparent 110px,
+    rgba(6, 6, 6, 0.82) 240px
+  );
+}
+
+/* --- Picker button --------------------------------------------------- */
+#cursor-toggle {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 500;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--gray);
+  border-radius: 50%;
+  background: rgba(10, 10, 12, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--white);
+  cursor: pointer;
+  opacity: 0.45;
+  transition:
+    opacity 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+#cursor-toggle:hover,
+#cursor-toggle.open,
+#cursor-toggle:focus-visible {
+  opacity: 1;
+  border-color: var(--highlight);
+  box-shadow: 0 0 18px -4px var(--highlight-glow);
+  outline: none;
+}
+#cursor-toggle.open {
+  transform: rotate(15deg);
+}
+#cursor-toggle svg {
+  display: block;
+}
+
+/* --- Picker panel -------------------------------------------------- */
+#cursor-panel {
+  position: fixed;
+  top: 3.4rem;
+  right: 1.1rem;
+  z-index: 501;
+  width: 19rem;
+  max-height: min(78vh, 40rem);
+  overflow-y: auto;
+  padding: 0.9rem;
+  border: 1px solid var(--gray);
+  border-radius: 12px;
+  background: rgba(10, 10, 12, 0.92);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
+  font-family: var(--main-font);
+}
+#cursor-panel h3 {
+  margin: 0.7rem 0 0.35rem;
+  font-family: var(--main-font);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6a6a72;
+}
+#cursor-panel h3:first-child {
+  margin-top: 0;
+}
+.cp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cp-row {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  align-items: center;
+  gap: 0.2rem 0.55rem;
+  padding: 0.45rem 0.5rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--white);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.cp-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.cp-row.on {
+  background: color-mix(in srgb, var(--highlight) 16%, transparent);
+}
+.cp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid #55555e;
+}
+.cp-row.on .cp-dot {
+  border-color: var(--highlight);
+  background: var(--highlight);
+  box-shadow: 0 0 8px var(--highlight-glow);
+}
+.cp-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.cp-desc {
+  grid-column: 2;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #79747f;
+}
+.cp-reset {
+  width: 100%;
+  margin-top: 0.9rem;
+  padding: 0.5rem;
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  background: transparent;
+  color: #9a9aa2;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.cp-reset:hover {
+  color: var(--white);
+  border-color: var(--highlight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cursor-toggle {
+    transition: none;
+  }
+}

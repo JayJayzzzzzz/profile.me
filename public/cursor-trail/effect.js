@@ -5,10 +5,27 @@
  * is generated locally instead of fetched from a third-party CDN.
  */
 (function () {
+	// Control surface for src/scripts/cursor.ts. Always present, even when the
+	// effect itself bails (touch / reduced-motion / no WebGL) so the trail picker
+	// can call it unconditionally. `available` says whether this trail can render.
+	var api = (window.__webglTrail = window.__webglTrail || {
+		available: false,
+		enabled: true,
+		setEnabled: function (on) { api.enabled = !!on; },
+	});
+
 	var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var coarse = window.matchMedia('(pointer: coarse)').matches;
 	if (window.innerWidth <= 500 || reduce || coarse || typeof THREE === 'undefined') return;
 	if (!hasWebGL()) return;
+
+	api.available = true;
+	api.setEnabled = function (on) {
+		api.enabled = !!on;
+		if (renderer && renderer.domElement) {
+			renderer.domElement.style.display = on ? '' : 'none';
+		}
+	};
 
 	function hasWebGL() {
 		try {
@@ -81,6 +98,8 @@
 
 		renderer = new THREE.WebGLRenderer();
 		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.domElement.id = 'webgl-trail';
+		if (!api.enabled) renderer.domElement.style.display = 'none';
 
 		document.body.prepend(renderer.domElement);
 
@@ -110,6 +129,8 @@
 		setTimeout(function () {
 			requestAnimationFrame(animate);
 		}, 1000 / 144);
+
+		if (!api.enabled) return; // trail picker switched this trail off
 
 		uniforms.u_mouse.value.x += (new_mouse.x - uniforms.u_mouse.value.x) * divisor;
 		uniforms.u_mouse.value.y += (new_mouse.y - uniforms.u_mouse.value.y) * divisor;

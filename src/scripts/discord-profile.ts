@@ -13,6 +13,7 @@
  * useless to anyone who shares no server with him.
  */
 import { DISCORD_USER_ID, DISCORD_PROFILE } from "../config";
+import { showToast } from "./toast";
 
 const LANYARD_ENDPOINT = "https://api.lanyard.rest/v1/users";
 const PROFILE_ENDPOINT = "https://dcdn.dstn.to/profile";
@@ -666,6 +667,7 @@ function copy(button: HTMLButtonElement): void {
   const done = () => {
     button.textContent = "Copied!";
     button.classList.add("copied");
+    showToast(`Copied ${value}`);
     window.setTimeout(() => {
       button.textContent = original;
       button.classList.remove("copied");

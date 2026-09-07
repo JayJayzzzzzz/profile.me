@@ -24,7 +24,11 @@
 body.dp-open {
   overflow: hidden;
 }
-body.dp-open .pointer {
+body.dp-open #cursor-host,
+body.dp-open #cursor-fx,
+body.dp-open #cursor-fxb,
+body.dp-open #cursor-toggle,
+body.dp-open #spotlight {
   display: none;
 }
 

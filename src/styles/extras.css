@@ -1,0 +1,268 @@
+/*
+ * Small enhancements: toasts, the click ripple, the keyboard-shortcut overlay,
+ * the Konami "party mode", the Spotify recently-played list in the Discord
+ * popout, and accessibility opt-outs (reduced transparency / more contrast).
+ */
+
+/* --- Toasts ---------------------------------------------------------- */
+.toast-host {
+  position: fixed;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.toast {
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(150, 90, 255, 0.3);
+  background: rgba(14, 13, 18, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  color: var(--white);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.toast[data-show] {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Click ripple -------------------------------------------------- */
+.click-ripple {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 2px solid var(--highlight);
+  pointer-events: none;
+  z-index: 3;
+  animation: click-ripple 0.5s ease-out forwards;
+}
+@keyframes click-ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: scale(6);
+  }
+}
+/* --- Keyboard shortcut overlay ----------------------------------- */
+.sc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.62);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.sc-card {
+  width: 320px;
+  max-width: 100%;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(150, 90, 255, 0.22);
+  background: rgba(14, 13, 18, 0.94);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  color: var(--white);
+}
+.sc-card:focus {
+  outline: none;
+}
+.sc-card h2 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.15rem;
+}
+.sc-card dl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.sc-card dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.sc-card dt {
+  display: flex;
+  gap: 0.3rem;
+}
+.sc-card dd {
+  font-size: 0.85rem;
+  color: #b6b6be;
+}
+.sc-card kbd {
+  min-width: 1.5rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom-width: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  font-family: var(--main-font);
+  font-size: 0.78rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+.sc-hint {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  color: #6a6a72;
+  letter-spacing: 0.05em;
+}
+
+/* --- Konami "party mode" --------------------------------------- */
+/* Hue-cycle the photo and card via their wrappers — never the elements
+   themselves (the unfold animates *their* `filter`, and mismatched filter
+   lists interpolate discretely) and never the full-screen trail canvases
+   (they repaint every frame, so an animated filter crawls). The trail goes
+   rainbow in JS instead (cursor.ts, on the pm:konami event). */
+body.konami #rotating-image,
+body.konami #rotating-card {
+  animation: konami-hue 6s linear infinite;
+}
+/* Static (not animated) boost so the WebGL shader's own colour cycle pops in
+   party mode without the per-frame filter recalc that an animation would cost. */
+body.konami #webgl-trail {
+  filter: saturate(2) brightness(1.2);
+}
+@keyframes konami-hue {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+body.konami-roll main {
+  animation: konami-roll 1s ease;
+}
+@keyframes konami-roll {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#easter-egg {
+  position: fixed;
+  left: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 4;
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--highlight);
+  background: rgba(14, 13, 18, 0.92);
+  box-shadow: 0 0 30px var(--highlight-glow);
+  color: var(--white);
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  white-space: pre;
+  opacity: 0;
+  transform: translateY(12px) rotate(-4deg);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+body.konami #easter-egg {
+  display: block;
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.konami #rotating-image,
+  body.konami #rotating-card,
+  body.konami-roll main {
+    animation: none !important;
+  }
+  .click-ripple {
+    display: none;
+  }
+  .toast,
+  #easter-egg {
+    transition-duration: 0.001s !important;
+  }
+}
+
+/* --- View Transitions (opening/closing panels) ----------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+
+/* --- Accessibility: reduced transparency ----------------------- */
+@media (prefers-reduced-transparency: reduce) {
+  #card {
+    background: #101014 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .panel,
+  .sc-card,
+  .toast,
+  .dp-popout,
+  #easter-egg {
+    background: #131317 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .panel-backdrop,
+  .sc-overlay,
+  .dp-backdrop {
+    background: rgba(0, 0, 0, 0.9) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* --- Accessibility: increased contrast ------------------------- */
+@media (prefers-contrast: more) {
+  :root {
+    --white: #fff;
+    --gray: #666;
+  }
+  a,
+  .link a {
+    text-shadow: none;
+    filter: none;
+  }
+  #card {
+    opacity: 1;
+    border: 1px solid var(--white);
+  }
+  .panel,
+  .sc-card {
+    border-color: var(--white);
+  }
+  .stat span,
+  .panel-id span,
+  .panel-row-main span,
+  .panel-section h3 {
+    color: #cfcfd6;
+  }
+}
