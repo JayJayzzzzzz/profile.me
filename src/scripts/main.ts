@@ -3,8 +3,10 @@ import { initPointer } from "./pointer";
 import { initClock } from "./clock";
 import { initAge } from "./age";
 import { initDiscordAvatar } from "./discord-avatar";
+import { initDiscordProfile } from "./discord-profile";
 
 initPointer();
 initClock();
 initAge();
 initDiscordAvatar();
+initDiscordProfile();

@@ -1,5 +1,7 @@
 /** Social and contact links shown as an icon row in the profile card. */
 
+import { DISCORD_USER_ID } from "../config";
+
 export type IconName =
   | "email"
   | "discord"
@@ -12,9 +14,11 @@ export type IconName =
 export interface SocialLink {
   /** Accessible label for the icon-only link. */
   name: string;
-  /** TODO: swap "#" for the real URL once it exists. */
+  /** Destination; also the no-JS fallback when {@link SocialLink.action} is set. */
   href: string;
   icon: IconName;
+  /** When set, JS intercepts the click and opens an in-page panel instead. */
+  action?: "discord";
 }
 
 /** Single-path SVG glyph for each brand (`vb` is the `viewBox`). */
@@ -55,11 +59,16 @@ export const icons: Record<IconName, Icon> = {
 };
 
 export const links: SocialLink[] = [
-  { name: "Email", href: "#", icon: "email" },
-  { name: "Discord", href: "#", icon: "discord" },
-  { name: "GitHub", href: "#", icon: "github" },
-  { name: "osu!", href: "#", icon: "osu" },
-  { name: "Reddit", href: "#", icon: "reddit" },
-  { name: "X", href: "#", icon: "x" },
-  { name: "Steam", href: "#", icon: "steam" },
+  { name: "Email", href: "mailto:julian.schaefers05@gmail.com", icon: "email" },
+  {
+    name: "Discord",
+    href: `https://discord.com/users/${DISCORD_USER_ID}`,
+    icon: "discord",
+    action: "discord",
+  },
+  { name: "GitHub", href: "https://github.com/JayJayzzzzzz", icon: "github" },
+  { name: "osu!", href: "https://osu.ppy.sh/users/20094442", icon: "osu" },
+  { name: "Reddit", href: "https://www.reddit.com/user/JayJayzzzzzz/", icon: "reddit" },
+  { name: "X", href: "https://x.com/SchaefersJulian", icon: "x" },
+  { name: "Steam", href: "https://steamcommunity.com/id/jayjayzzzzzz/", icon: "steam" },
 ];

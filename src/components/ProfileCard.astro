@@ -19,7 +19,13 @@ const age = ageFrom(new Date());
       {
         links.map((link) => (
           <li class="link">
-            <a href={link.href} aria-label={link.name} rel="noopener noreferrer" target="_blank">
+            <a
+              href={link.href}
+              aria-label={link.name}
+              rel="noopener noreferrer"
+              target="_blank"
+              data-action={link.action}
+            >
               <svg viewBox={icons[link.icon].vb} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path fill="currentColor" d={icons[link.icon].d} />
               </svg>
