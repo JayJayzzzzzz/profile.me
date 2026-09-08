@@ -30,7 +30,7 @@ export const GOATCOUNTER_CODE = "";
  * scrapers to re-fetch. Set to "" to fall back to the static build-time image
  * at `/og/index.png`.
  */
-export const OG_IMAGE_URL = "https://jayjayzzzzzz-og.vercel.app/og.png?v=1";
+export const OG_IMAGE_URL = "https://profile-me-seven.vercel.app/og.png?v=1";
 
 /** Home location — the clock, the inline weather readout and copy all use it. */
 export const LOCATION = {
