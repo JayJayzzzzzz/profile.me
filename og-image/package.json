@@ -9,11 +9,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@vercel/og": "^1.0.2"
+    "workers-og": "^0.0.27"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^26.5.0",
+    "@vercel/og": "^1.0.2",
     "satori": "^0.33.4",
     "tsx": "^4.23.13",
     "typescript": "5.7"

@@ -16,7 +16,7 @@ scraper ──▶ /og.png ──┬─▶ Lanyard          discord status + avat
     Slack, …)         ├─▶ worker /osu       global rank + pp
                       └─▶ worker /steam     level or current game
                               │
-                      satori + resvg (via @vercel/og) ──▶ PNG
+                      satori + resvg-wasm (via workers-og) ──▶ PNG
                               │
               Cache-Control: s-maxage=90, stale-while-revalidate=600
 ```
@@ -64,8 +64,9 @@ npm run test:render            # real live data  → og-test.png
 npm run test:render:fixture    # canned data, offline
 ```
 
-`test:render` uses `satori` + `@resvg/resvg-js` directly (devDependencies);
-production uses `@vercel/og`, which wraps the same two libraries.
+`test:render` uses `satori` + `@resvg/resvg-js` (Node, devDependencies) with the
+committed `fonts/`; production uses `workers-og` (satori + resvg-**wasm**, runs on
+Vercel's Edge runtime) and fetches the same fonts from the jsdelivr CDN.
 
 When the card's **look** changes, bump `?v=` in `OG_IMAGE_URL` so scrapers that
 already cached the old image fetch the new one.
@@ -77,5 +78,5 @@ already cached the old image fetch the new one.
 | `api/og.ts`              | Vercel edge handler — fonts, cache headers      |
 | `lib/data.ts`            | fetch + normalise the live data                 |
 | `lib/card.ts`            | the card as a Satori element tree               |
-| `fonts/`                 | Roboto Black + JetBrains Mono (subsetted TTF)   |
+| `fonts/`                 | Roboto Black + JetBrains Mono — local preview only (prod fetches them) |
 | `scripts/render-local.ts`| local preview                                    |
