@@ -1,9 +1,8 @@
 /* TEAM */
 
   Developer / Designer: Julian Schaefers (JayJayzzzzzz)
-  Site: hi [at] julian.schaefers05 [at] gmail.com
+  Contact: julian.schaefers05 [at] gmail [dot] com
   GitHub: github.com/JayJayzzzzzz
-  Mastodon-of-choice: discord.com/users/483999801034145793
   From: Wiesbaden, Germany
 
 /* THANKS */
@@ -29,4 +28,4 @@
        | || \__ \   built by hand,
         \__/|___/   poked at often
 
-  psst — press ` for a shell, or ⌘K / Ctrl+K
+  psst — ⌘K / Ctrl+K opens a command palette; the console key opens a shell
