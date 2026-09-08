@@ -1,35 +1,36 @@
 /** Fills `#weather` with the current conditions at LOCATION (Open-Meteo, no key). */
 import { LOCATION } from "../config";
 
+/** WMO weather codes → an adjective that reads after "…, 20°C, ___ for me…". */
 const CONDITIONS: Record<number, string> = {
   0: "clear",
   1: "mostly clear",
   2: "partly cloudy",
   3: "overcast",
   45: "foggy",
-  48: "in freezing fog",
-  51: "drizzling",
-  53: "drizzling",
-  55: "drizzling",
-  56: "in freezing drizzle",
-  57: "in freezing drizzle",
-  61: "raining",
-  63: "raining",
+  48: "foggy",
+  51: "drizzly",
+  53: "drizzly",
+  55: "drizzly",
+  56: "sleeting",
+  57: "sleeting",
+  61: "rainy",
+  63: "rainy",
   65: "pouring",
-  66: "in freezing rain",
-  67: "in freezing rain",
-  71: "snowing",
-  73: "snowing",
-  75: "snowing hard",
-  77: "spitting snow",
+  66: "sleeting",
+  67: "sleeting",
+  71: "snowy",
+  73: "snowy",
+  75: "snowy",
+  77: "flurrying",
   80: "showery",
   81: "showery",
-  82: "in heavy showers",
-  85: "in snow showers",
-  86: "in snow showers",
-  95: "storming",
-  96: "storming with hail",
-  99: "storming with hail",
+  82: "stormy",
+  85: "snowy",
+  86: "snowy",
+  95: "stormy",
+  96: "stormy",
+  99: "stormy",
 };
 
 export function initWeather(): void {
@@ -47,7 +48,9 @@ export function initWeather(): void {
       const temp = Math.round(body.current?.temperature_2m ?? NaN);
       if (Number.isNaN(temp)) return;
       const condition = CONDITIONS[body.current?.weather_code ?? -1];
-      el.innerHTML = ` It's <b>${temp}°C</b>${condition ? ` and ${condition}` : ""} right now.`;
+      // Woven into "It is <clock><weather> for me in …" — a parenthetical, so it
+      // never leaves an orphaned word at a line break.
+      el.innerHTML = ` and <b>${temp}°C</b>${condition ? `, ${condition},` : ""}`;
       el.hidden = false;
     })
     .catch(() => {

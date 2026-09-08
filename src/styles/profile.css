@@ -78,6 +78,7 @@ main {
 #card p {
   font-size: 0.95rem;
   line-height: 1.55;
+  text-wrap: pretty; /* avoid orphaned words / bad break points */
 }
 #card p,
 #card p * {
@@ -163,8 +164,7 @@ main:focus-within #rotating-image {
 @media (max-width: 505px) {
   #cursor-host,
   #cursor-fx,
-  #cursor-fxb,
-  #cursor-toggle {
+  #cursor-fxb {
     display: none;
   }
 

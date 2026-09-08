@@ -185,3 +185,12 @@
     transition: none;
   }
 }
+
+/* Mobile has no custom cursor, so no picker either. This must live here (not in
+   profile.css) to beat the base `#cursor-toggle { display: grid }` rule above. */
+@media (max-width: 505px) {
+  #cursor-toggle,
+  #cursor-panel {
+    display: none;
+  }
+}
