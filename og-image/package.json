@@ -8,6 +8,9 @@
     "test:render:fixture": "tsx scripts/render-local.ts --fixture",
     "typecheck": "tsc --noEmit"
   },
+  "allowScripts": {
+    "esbuild": true
+  },
   "dependencies": {
     "workers-og": "^0.0.27"
   },
