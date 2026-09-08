@@ -60,6 +60,10 @@ export default {
 
     const cache = caches.default;
     const cacheKey = new Request(url.toString(), { method: "GET" });
+    // A second, long-lived copy of the last good payload — served if the
+    // upstream is briefly down or rate-limiting us (osu! OAuth loves a 429).
+    const staleKey = new Request(`${url.origin}${url.pathname}/__last_good`, { method: "GET" });
+
     const hit = await cache.match(cacheKey);
     if (hit) return withCors(hit, cors);
 
@@ -70,13 +74,43 @@ export default {
       else if (route === "/spotify") payload = await spotify(env);
       else return json({ error: "not_found" }, 404, cors);
     } catch (err) {
+      const stale = await cache.match(staleKey);
+      if (stale) {
+        const body = await stale.text();
+        return new Response(body, {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            ...cors,
+            "Cache-Control": "public, max-age=30",
+            "X-Stale": "1",
+          },
+        });
+      }
       return json({ error: "upstream_failed", detail: String(err) }, 502, cors);
     }
 
     // Spotify carries "now playing", so keep it fresher than the rest.
     const ttl = route === "/spotify" ? 45 : Number(env.CACHE_SECONDS) || 300;
-    const response = json(payload, 200, { ...cors, "Cache-Control": `public, max-age=${ttl}` });
+    const body = JSON.stringify(payload);
+    const response = new Response(body, {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        ...cors,
+        "Cache-Control": `public, max-age=${ttl}`,
+      },
+    });
     ctx.waitUntil(cache.put(cacheKey, response.clone()));
+    ctx.waitUntil(
+      cache.put(
+        staleKey,
+        new Response(body, {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Cache-Control": "public, max-age=86400",
+          },
+        }),
+      ),
+    );
     return response;
   },
 };
@@ -135,8 +169,22 @@ async function osu(env: Env): Promise<unknown> {
   };
 }
 
+/** Shared across isolates so we hit osu!'s heavily rate-limited token
+ *  endpoint about once a day, not once per cold isolate. */
+const OSU_TOKEN_CACHE_KEY = new Request("https://osu-token.internal/client-credentials");
+
 async function osuAccessToken(env: Env): Promise<string> {
-  if (osuToken && osuToken.expires > Date.now() + 30_000) return osuToken.value;
+  if (osuToken && osuToken.expires > Date.now() + 60_000) return osuToken.value;
+
+  const cache = caches.default;
+  const cached = await cache.match(OSU_TOKEN_CACHE_KEY);
+  if (cached) {
+    const saved = (await cached.json()) as { value: string; expires: number };
+    if (saved.expires > Date.now() + 60_000) {
+      osuToken = saved;
+      return saved.value;
+    }
+  }
 
   const res = await fetch("https://osu.ppy.sh/oauth/token", {
     method: "POST",
@@ -151,7 +199,17 @@ async function osuAccessToken(env: Env): Promise<string> {
   if (!res.ok) throw new Error(`osu_token_${res.status}`);
 
   const body = (await res.json()) as any;
-  osuToken = { value: body.access_token, expires: Date.now() + (body.expires_in ?? 3600) * 1000 };
+  const lifetime = body.expires_in ?? 3600;
+  osuToken = { value: body.access_token, expires: Date.now() + lifetime * 1000 };
+  await cache.put(
+    OSU_TOKEN_CACHE_KEY,
+    new Response(JSON.stringify(osuToken), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `public, max-age=${Math.max(60, Math.floor(lifetime - 600))}`,
+      },
+    }),
+  );
   return osuToken.value;
 }
 
