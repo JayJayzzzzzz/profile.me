@@ -5,7 +5,7 @@
  * now-playing / osu! / Steam / local-time chips. Pure function — the handler
  * and the local render script both feed it a {@link CardData}.
  */
-import type { CardData, Status } from "./data.ts";
+import type { CardData, Status } from "./data";
 
 /* Minimal hyperscript. Satori only needs `{ type, props: { style, children } }`. */
 type El = { type: string; props: Record<string, unknown> };

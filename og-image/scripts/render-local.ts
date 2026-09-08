@@ -10,8 +10,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
-import { buildCard } from "../lib/card.ts";
-import { getData, type CardData } from "../lib/data.ts";
+import { buildCard } from "../lib/card";
+import { getData, type CardData } from "../lib/data";
 
 const FIXTURE: CardData = {
   name: "jayjayzzzzzz",

@@ -8,8 +8,8 @@
  * ?debug=1 returns the resolved data as JSON instead of the image.
  */
 import { ImageResponse } from "@vercel/og";
-import { getData } from "../lib/data.ts";
-import { buildCard } from "../lib/card.ts";
+import { getData } from "../lib/data";
+import { buildCard } from "../lib/card";
 
 export const config = { runtime: "edge" };
 
