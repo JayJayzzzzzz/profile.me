@@ -1,0 +1,149 @@
+/* Guestbook — shared by the in-page panel and the /guestbook page. */
+
+.gb {
+  -webkit-user-select: text;
+  user-select: text;
+}
+.gb * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.gb-title {
+  margin-bottom: 0.3rem;
+  font-family: var(--highlight-font);
+  font-weight: 900;
+  letter-spacing: 0.12rem;
+  font-size: 1.2rem;
+}
+.gb-lead {
+  margin-bottom: 1rem;
+  color: #8a8a92;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.gb-form {
+  margin-bottom: 1.4rem;
+}
+.gb-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.gb-name,
+.gb-message {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--white);
+  font-family: var(--main-font);
+  font-size: 0.88rem;
+}
+.gb-message {
+  resize: vertical;
+  min-height: 3.2rem;
+}
+.gb-name:focus,
+.gb-message:focus {
+  outline: none;
+  border-color: var(--highlight);
+  box-shadow: 0 0 0 1px var(--highlight-glow);
+}
+
+/* Honeypot — off-screen, never shown to a real visitor. */
+.gb-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.gb-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+}
+.gb-count {
+  color: #6a6a72;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.gb-submit {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--highlight);
+  background: color-mix(in srgb, var(--highlight) 24%, transparent);
+  color: #fff;
+  font-family: var(--main-font);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.gb-submit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--highlight) 40%, transparent);
+}
+.gb-submit:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.gb-error {
+  margin-top: 0.6rem;
+  color: #ff6b8a;
+  font-size: 0.78rem;
+}
+
+.gb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.gb-entry {
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+.gb-entry-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 0.25rem;
+}
+.gb-entry-head b {
+  color: #fff;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.gb-entry-head time {
+  margin-left: auto;
+  flex: none;
+  color: #6a6a72;
+  font-size: 0.72rem;
+}
+.gb-flag {
+  font-size: 0.8rem;
+}
+.gb-entry p {
+  color: #cfcfd6;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* --- Standalone /guestbook page --- */
+.gb-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+.gb-page .gb-back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}

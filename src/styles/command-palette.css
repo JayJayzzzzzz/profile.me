@@ -1,0 +1,96 @@
+/* ⌘K / Ctrl+K / "/" command palette (src/scripts/command-palette.ts). */
+
+.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: grid;
+  place-items: start center;
+  padding: max(10vh, 3rem) 1rem 1rem;
+  background: rgba(0, 0, 0, 0.62);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: cmdk-fade 0.14s ease;
+}
+@keyframes cmdk-fade {
+  from {
+    opacity: 0;
+  }
+}
+body.cmdk-open {
+  overflow: hidden;
+}
+
+.cmdk {
+  width: 480px;
+  max-width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(150, 90, 255, 0.22);
+  background: rgba(14, 13, 18, 0.94);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.6),
+    0 0 40px var(--highlight-glow);
+  overflow: hidden;
+}
+
+.cmdk-input {
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: var(--white);
+  font-size: 0.95rem;
+  font-family: var(--main-font);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.cmdk-input::placeholder {
+  color: #6a6a72;
+}
+.cmdk-input:focus {
+  outline: none;
+}
+
+.cmdk-list {
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: 0.4rem;
+  list-style: none;
+}
+.cmdk-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.cmdk-list li[aria-selected="true"] {
+  background: color-mix(in srgb, var(--highlight) 20%, transparent);
+}
+.cmdk-title {
+  color: var(--white);
+  font-size: 0.88rem;
+}
+.cmdk-hint {
+  margin-left: auto;
+  flex: none;
+  color: #8a8a92;
+  font-size: 0.74rem;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+}
+.cmdk-empty {
+  padding: 1.4rem 0.7rem;
+  color: #8a8a92;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmdk-overlay {
+    animation-duration: 0.001s;
+  }
+}

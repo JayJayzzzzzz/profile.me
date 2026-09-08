@@ -17,6 +17,7 @@ const SHORTCUTS: Shortcut[] = [
   { keys: ["p"], label: "Spotify", action: "spotify" },
   { keys: ["o"], label: "osu!", action: "osu" },
   { keys: ["s"], label: "Steam", action: "steam" },
+  { keys: ["b"], label: "Guestbook", action: "guestbook" },
   { keys: ["e"], label: "Email", action: "Email", byLabel: true },
   { keys: ["r"], label: "Reddit", action: "Reddit", byLabel: true },
   { keys: ["x"], label: "X / Twitter", action: "X", byLabel: true },
@@ -75,6 +76,11 @@ function toggleOverlay(): void {
   else openOverlay();
 }
 
+/** Open the shortcuts cheatsheet — also reachable from the command palette. */
+export function openShortcuts(): void {
+  if (!overlay) openOverlay();
+}
+
 function openOverlay(): void {
   overlay = document.createElement("div");
   overlay.className = "sc-overlay";
@@ -86,6 +92,8 @@ function openOverlay(): void {
           (s) =>
             `<div><dt>${s.keys.map((k) => `<kbd>${k}</kbd>`).join("")}</dt><dd>${s.label}</dd></div>`,
         ).join("")}
+        <div><dt><kbd>⌘</kbd><kbd>K</kbd></dt><dd>Command palette</dd></div>
+        <div><dt><kbd>\`</kbd><kbd>&lt;</kbd></dt><dd>Terminal (console key, or ⌘K)</dd></div>
         <div><dt><kbd>?</kbd></dt><dd>This menu</dd></div>
         <div><dt><kbd>Esc</kbd></dt><dd>Close</dd></div>
       </dl>

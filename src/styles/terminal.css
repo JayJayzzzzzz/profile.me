@@ -1,0 +1,148 @@
+/* Drop-down toy shell, opened with the backtick key (src/scripts/terminal.ts). */
+
+.term {
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  padding: max(6vh, 2rem) 1rem 1rem;
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.term[data-open] {
+  display: flex;
+}
+body.term-open {
+  overflow: hidden;
+}
+
+.term-window {
+  width: 620px;
+  max-width: 100%;
+  /* Fixed size — the output area scrolls, the window itself never resizes. */
+  height: min(70vh, 520px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid rgba(150, 90, 255, 0.28);
+  background: rgba(9, 9, 12, 0.96);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.65),
+    0 0 40px var(--highlight-glow);
+  overflow: hidden;
+  animation: term-in 0.16s ease;
+}
+@keyframes term-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.term-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+.term-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+.term-dot:first-child {
+  background: var(--highlight);
+}
+.term-title {
+  margin-left: 0.4rem;
+  color: #8a8a92;
+  font-size: 0.72rem;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+}
+.term-x {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: #8a8a92;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.term-x:hover {
+  color: var(--white);
+}
+
+.term-out,
+.term-in,
+.term-prompt {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.term-out {
+  flex: 1;
+  min-height: 0; /* let it shrink inside the fixed-height column so it can scroll */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 0.9rem 1rem 0.4rem;
+  color: #cfcfd6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.term-block {
+  white-space: pre-wrap;
+}
+.term-block + .term-block {
+  margin-top: 0.15rem;
+}
+
+.term-line {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem 0.9rem;
+}
+.term-prompt {
+  color: var(--highlight);
+  flex: none;
+}
+.term-in {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--white);
+  caret-color: var(--highlight);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.term-in:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .term-window {
+    animation-duration: 0.001s;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .term-window {
+    background: #0b0b0e;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

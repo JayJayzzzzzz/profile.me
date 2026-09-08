@@ -19,7 +19,7 @@ export const OSU_USER_ID = "20094442";
 export const WORKER_ENDPOINT = "https://profile-me-proxy.jayjayzzzzzz.workers.dev";
 
 /** Cookieless analytics. Set to your GoatCounter site code, e.g. "jayjay". */
-export const GOATCOUNTER_CODE = "";
+export const GOATCOUNTER_CODE = "jayjayzzzzzz";
 
 /**
  * Open Graph / link-preview image.

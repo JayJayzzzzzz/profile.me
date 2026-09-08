@@ -5,6 +5,9 @@ import "../styles/discord-profile.css";
 import "../styles/panel.css";
 import "../styles/extras.css";
 import "../styles/cursor.css";
+import "../styles/command-palette.css";
+import "../styles/terminal.css";
+import "../styles/guestbook.css";
 import ProfileCard from "../components/ProfileCard.astro";
 import { GOATCOUNTER_CODE, OG_IMAGE_URL } from "../config";
 
@@ -19,12 +22,18 @@ const ogImage = OG_IMAGE_URL || new URL("og/index.png", Astro.site).href;
     <meta charset="utf-8" />
     <!-- Fallback icon; src/scripts/discord-avatar.ts swaps to the live Discord avatar. -->
     <link rel="icon" type="image/svg+xml" href="/avatar-fallback.svg" id="favicon" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
+    <link rel="author" href="/humans.txt" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#060606" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="JayJay" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="JayJayzzzzzz" />

@@ -36,6 +36,11 @@ export function initKonami(): void {
   });
 }
 
+/** Flip party mode on/off — also reachable from the command palette. */
+export function toggleParty(): void {
+  toggle();
+}
+
 function toggle(): void {
   const on = document.body.classList.toggle("konami");
   dispatchEvent(new CustomEvent("pm:konami", { detail: on }));

@@ -1,0 +1,32 @@
+/* TEAM */
+
+  Developer / Designer: Julian Schaefers (JayJayzzzzzz)
+  Site: hi [at] julian.schaefers05 [at] gmail.com
+  GitHub: github.com/JayJayzzzzzz
+  Mastodon-of-choice: discord.com/users/483999801034145793
+  From: Wiesbaden, Germany
+
+/* THANKS */
+
+  osumatrix.me — the look this page is a homage to
+  Lanyard (Phineas) — live Discord presence
+  Open-Meteo — keyless weather
+  Cloudflare Workers — the API proxy + guestbook
+
+/* SITE */
+
+  Last update: 2026/09/08
+  Language: English
+  Doctype: HTML5
+  IDE: VS Code
+  Framework: Astro (no UI framework)
+  Hosting: GitHub Pages + Cloudflare Workers
+  Standards: HTML5, CSS3, ES modules
+  Components: WebGL cursor trail, service-worker offline fallback
+
+              ___
+        _  _ / __|
+       | || \__ \   built by hand,
+        \__/|___/   poked at often
+
+  psst — press ` for a shell, or ⌘K / Ctrl+K

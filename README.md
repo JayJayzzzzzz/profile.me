@@ -25,12 +25,22 @@ homage to [osumatrix.me](https://osumatrix.me/): dark `#060606` background, neon
   spotlight, velocity blade, halo) and 8 trails (the original WebGL shader, neon
   ribbon, ember, sparks, light streak, ripple wake, aurora, none). The choice is
   remembered per visitor; the default is the original blend circle + shader.
+- **Command palette** — `⌘K` / `Ctrl+K` (or `/`) fuzzy-searches every link,
+  panel and action (copy email, copy URL, open terminal, party mode)
+- **Terminal** — the console key (backtick / `<>|`, or the palette) drops a toy
+  shell (`help`, `whoami`, `ls`, `cat`, `open <link>`, `neofetch`, …)
+- **Guestbook** (book icon, or `/guestbook`) — leave a short message; stored in
+  Cloudflare D1 behind the [worker](./worker), honeypot + rate-limit spam defence
 - **Keyboard shortcuts** — `?` for the cheatsheet, single keys to jump to a link
 - **Konami code** (`↑↑↓↓←→←→ B A`) — a hue-cycling trail, a barrel roll and a
   hidden panel
 - Click ripple on the cursor, toast notifications, View Transitions on panel open
 - Dynamic **Open Graph image** at `/og/index.png` ([astro-og-canvas](https://github.com/delucis/astro-og-canvas))
-- Optional cookieless analytics ([GoatCounter](https://www.goatcounter.com/))
+- Machine-readable **`/links.json`** (generated from `social-links.ts`) and a
+  **`/humans.txt`**
+- Cookieless analytics ([GoatCounter](https://www.goatcounter.com/))
+- **Installable PWA** — `manifest.webmanifest` + icons; the command palette
+  offers a native install prompt where the browser supports one
 - **Offline fallback** via a service worker (production only)
 - Respects `prefers-reduced-motion`, `prefers-reduced-transparency` and
   `prefers-contrast`

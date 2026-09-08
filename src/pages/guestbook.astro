@@ -1,0 +1,47 @@
+---
+import "../styles/global.css";
+import "../styles/panel.css";
+import "../styles/guestbook.css";
+
+const canonical = new URL("/guestbook", Astro.site).href;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/avatar-fallback.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <meta name="description" content="Sign JayJayzzzzzz's guestbook." />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#060606" />
+    <meta name="robots" content="noindex" />
+    <title>Guestbook — JayJayzzzzzz</title>
+    <style is:global>
+      /* index.css pins the viewport for the homepage unfold; this page scrolls. */
+      html,
+      body {
+        height: auto;
+        overflow: visible;
+      }
+      body {
+        display: block;
+        background: var(--bg-color);
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="gb-page">
+      <a class="gb-back" href="/">← back to jayjayzzzzzz.me</a>
+      <div id="guestbook"><p class="panel-note">Loading…</p></div>
+    </main>
+
+    <script>
+      import { renderGuestbookInto } from "../scripts/guestbook";
+      const host = document.getElementById("guestbook");
+      if (host) renderGuestbookInto(host);
+    </script>
+  </body>
+</html>

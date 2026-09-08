@@ -16,21 +16,24 @@ const age = ageFrom(new Date());
     </p>
     <ul>
       {
-        links.map((link) => (
-          <li class="link">
-            <a
-              href={link.href}
-              aria-label={link.name}
-              rel="noopener noreferrer"
-              target="_blank"
-              data-action={link.action}
-            >
-              <svg viewBox={icons[link.icon].vb} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path fill="currentColor" d={icons[link.icon].d} />
-              </svg>
-            </a>
-          </li>
-        ))
+        links.map((link) => {
+          const external = /^https?:|^mailto:/.test(link.href);
+          return (
+            <li class="link">
+              <a
+                href={link.href}
+                aria-label={link.name}
+                rel={external ? "noopener noreferrer" : undefined}
+                target={external ? "_blank" : undefined}
+                data-action={link.action}
+              >
+                <svg viewBox={icons[link.icon].vb} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path fill="currentColor" d={icons[link.icon].d} />
+                </svg>
+              </a>
+            </li>
+          );
+        })
       }
     </ul>
   </div>

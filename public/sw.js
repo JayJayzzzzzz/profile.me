@@ -5,10 +5,15 @@
  *   - cross-origin (Lanyard, Discord CDN, the worker, GoatCounter): untouched
  * Bump CACHE when the shell or the cursor-trail files change.
  */
-const CACHE = "profile-me-v2";
+const CACHE = "profile-me-v3";
 const CORE = [
   "/",
   "/avatar-fallback.svg",
+  "/manifest.webmanifest",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/icon-maskable-512.png",
+  "/apple-touch-icon.png",
   "/cursor-trail/effect.js",
   "/cursor-trail/fragment.glsl",
   "/cursor-trail/vertex.glsl",
