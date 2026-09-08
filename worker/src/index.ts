@@ -4,15 +4,18 @@
  * Fronts the three APIs that need a secret credential and so cannot be called
  * from the static site directly:
  *
- *   GET /osu      → osu! v2 user statistics       (OSU_CLIENT_ID / OSU_CLIENT_SECRET)
- *   GET /steam    → Steam summary + recent games  (STEAM_API_KEY / STEAM_ID)
- *   GET /spotify  → recently played tracks        (SPOTIFY_CLIENT_ID /
- *                                                  SPOTIFY_CLIENT_SECRET /
- *                                                  SPOTIFY_REFRESH_TOKEN)
+ *   GET    /osu       → osu! v2 user statistics       (OSU_CLIENT_ID / OSU_CLIENT_SECRET)
+ *   GET    /steam     → Steam summary + recent games  (STEAM_API_KEY / STEAM_ID)
+ *   GET    /spotify   → recently played tracks        (SPOTIFY_CLIENT_ID /
+ *                                                      SPOTIFY_CLIENT_SECRET /
+ *                                                      SPOTIFY_REFRESH_TOKEN)
+ *   GET    /guestbook → recent guestbook entries      (D1 binding DB)
+ *   POST   /guestbook → leave an entry                (D1 binding DB)
+ *   DELETE /guestbook?id=… → remove one               (GUESTBOOK_ADMIN_TOKEN)
  *
- * Every response is small, public, read-only JSON and is edge-cached for
- * CACHE_SECONDS (default 300). ALLOWED_ORIGIN locks CORS to the site and
- * defaults to "*". See worker/README.md for setup.
+ * The read-only proxy responses are small, public JSON and edge-cached for
+ * CACHE_SECONDS (default 300); the guestbook is never cached. ALLOWED_ORIGIN
+ * locks CORS to the site and defaults to "*". See worker/README.md for setup.
  */
 
 export interface Env {
@@ -26,6 +29,8 @@ export interface Env {
   SPOTIFY_REFRESH_TOKEN?: string;
   ALLOWED_ORIGIN?: string;
   CACHE_SECONDS?: string;
+  DB?: D1Database;
+  GUESTBOOK_ADMIN_TOKEN?: string;
 }
 
 /** osu! guest tokens last ~24h; cache one per isolate. */
@@ -46,16 +51,22 @@ export default {
         : allowlist.includes(requestOrigin)
           ? requestOrigin
           : allowlist[0],
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
       Vary: "Origin",
     };
 
     if (request.method === "OPTIONS") return new Response(null, { headers: cors });
-    if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405, cors);
 
     const route = url.pathname.replace(/\/+$/, "") || "/";
+
+    // Guestbook — its own read/write handling, never edge-cached.
+    if (route === "/guestbook") return guestbook(request, env, cors);
+
+    if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405, cors);
+
     if (route === "/") {
-      return json({ ok: true, routes: ["/osu", "/steam", "/spotify"] }, 200, cors);
+      return json({ ok: true, routes: ["/osu", "/steam", "/spotify", "/guestbook"] }, 200, cors);
     }
 
     const cache = caches.default;
@@ -114,6 +125,119 @@ export default {
     return response;
   },
 };
+
+/* --- Guestbook --------------------------------------------------------- */
+
+const GB_MAX_NAME = 40;
+const GB_MAX_MESSAGE = 500;
+const GB_MIN_FILL_MS = 2500; // a human takes at least this long to write something
+const GB_WINDOW_MS = 60 * 60 * 1000;
+const GB_WINDOW_MAX = 3; // entries per IP per hour
+const GB_LINK_RE =
+  /(https?:\/\/|www\.|\b[a-z0-9-]+\.(?:com|net|org|io|ru|xyz|top|link|shop|info|biz)\b)/i;
+
+interface GbEntry {
+  name: string;
+  message: string;
+  country: string | null;
+  created_at: string;
+}
+
+async function guestbook(
+  request: Request,
+  env: Env,
+  cors: Record<string, string>,
+): Promise<Response> {
+  const headers = { ...cors, "Cache-Control": "no-store" };
+  if (!env.DB) return json({ error: "guestbook_not_configured" }, 503, headers);
+
+  try {
+    if (request.method === "GET") {
+      const { results } = await env.DB.prepare(
+        `SELECT name, message, country, created_at
+           FROM guestbook ORDER BY created_at DESC LIMIT 100`,
+      ).all<GbEntry>();
+      return json({ entries: results ?? [] }, 200, headers);
+    }
+
+    if (request.method === "DELETE") {
+      const token = (request.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+      if (!env.GUESTBOOK_ADMIN_TOKEN || token !== env.GUESTBOOK_ADMIN_TOKEN) {
+        return json({ error: "unauthorized" }, 401, headers);
+      }
+      const id = new URL(request.url).searchParams.get("id");
+      if (!id) return json({ error: "missing_id" }, 400, headers);
+      const res = await env.DB.prepare(`DELETE FROM guestbook WHERE id = ?`).bind(id).run();
+      return json({ deleted: res.meta.changes ?? 0 }, 200, headers);
+    }
+
+    if (request.method !== "POST") {
+      return json({ error: "method_not_allowed" }, 405, headers);
+    }
+
+    const body = (await request.json().catch(() => null)) as
+      | { name?: unknown; message?: unknown; website?: unknown; elapsed?: unknown }
+      | null;
+    if (!body) return json({ error: "bad_json" }, 400, headers);
+
+    // Honeypot + fill-time — bots complete hidden fields and submit instantly.
+    if (typeof body.website === "string" && body.website.trim() !== "") {
+      return json({ error: "rejected" }, 422, headers);
+    }
+    if (
+      typeof body.elapsed === "number" &&
+      body.elapsed >= 0 &&
+      body.elapsed < GB_MIN_FILL_MS
+    ) {
+      return json({ error: "rejected" }, 422, headers);
+    }
+
+    const name = String(body.name ?? "").replace(/\s+/g, " ").trim();
+    const message = String(body.message ?? "").replace(/\r\n/g, "\n").trim();
+    if (!name || !message) return json({ error: "empty" }, 422, headers);
+    if (name.length > GB_MAX_NAME || message.length > GB_MAX_MESSAGE) {
+      return json({ error: "too_long" }, 422, headers);
+    }
+    if (GB_LINK_RE.test(name) || GB_LINK_RE.test(message)) {
+      return json({ error: "contains_link" }, 422, headers);
+    }
+
+    const ip = request.headers.get("CF-Connecting-IP") || "0.0.0.0";
+    const iphash = await sha256(`${ip}|${env.GUESTBOOK_ADMIN_TOKEN ?? "pm"}`);
+    const since = new Date(Date.now() - GB_WINDOW_MS).toISOString();
+    const recent = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM guestbook WHERE iphash = ? AND created_at > ?`,
+    )
+      .bind(iphash, since)
+      .first<{ n: number }>();
+    if ((recent?.n ?? 0) >= GB_WINDOW_MAX) {
+      return json({ error: "rate_limited" }, 429, headers);
+    }
+
+    const country = (request.headers.get("CF-IPCountry") || "").toUpperCase();
+    const entry: GbEntry = {
+      name,
+      message,
+      country: /^[A-Z]{2}$/.test(country) ? country : null,
+      created_at: new Date().toISOString(),
+    };
+    await env.DB.prepare(
+      `INSERT INTO guestbook (id, name, message, country, iphash, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(crypto.randomUUID(), entry.name, entry.message, entry.country, iphash, entry.created_at)
+      .run();
+
+    return json({ entry }, 201, headers);
+  } catch (err) {
+    return json({ error: "guestbook_failed", detail: String(err) }, 500, headers);
+  }
+}
+
+async function sha256(input: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 /* --- osu! ---------------------------------------------------------------- */
 

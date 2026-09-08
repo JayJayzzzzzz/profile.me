@@ -18,6 +18,14 @@ CACHE_SECONDS = "300"
 OSU_USER_ID = "20094442"
 STEAM_ID = "jayjayzzzzzz"          # 64-bit id or vanity name; both work
 
+# Guestbook storage. Create the DB once, then paste the printed database_id here:
+#   npx wrangler d1 create profile-me-guestbook
+#   npx wrangler d1 migrations apply profile-me-guestbook --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "profile-me-guestbook"
+database_id = "b6a5f9fb-9ab3-4251-beda-75fc758b5bd7"                   # <-- fill in from `wrangler d1 create`
+
 # Secrets — never put these here. Set each with:
 #   npx wrangler secret put OSU_CLIENT_ID
 #   npx wrangler secret put OSU_CLIENT_SECRET
@@ -25,3 +33,4 @@ STEAM_ID = "jayjayzzzzzz"          # 64-bit id or vanity name; both work
 #   npx wrangler secret put SPOTIFY_CLIENT_ID
 #   npx wrangler secret put SPOTIFY_CLIENT_SECRET
 #   npx wrangler secret put SPOTIFY_REFRESH_TOKEN
+#   npx wrangler secret put GUESTBOOK_ADMIN_TOKEN   # any long random string; lets you DELETE entries

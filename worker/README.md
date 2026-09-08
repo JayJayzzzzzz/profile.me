@@ -4,16 +4,18 @@ A tiny Cloudflare Worker that fronts the three APIs the landing page can't call
 directly, because each needs a secret credential that must not ship in a static
 site:
 
-| Route      | Upstream                                   | Credentials                                                        |
-| :--------- | :----------------------------------------- | :---------------------------------------------------------------- |
-| `/osu`     | osu! API v2 (`users`, `scores/best`)       | `OSU_CLIENT_ID`, `OSU_CLIENT_SECRET`                              |
-| `/steam`   | Steam Web API (summary + recent + owned)   | `STEAM_API_KEY`                                                    |
-| `/spotify` | Spotify `recently-played`                  | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` |
+| Route        | Upstream                                   | Credentials                                                        |
+| :----------- | :----------------------------------------- | :---------------------------------------------------------------- |
+| `/osu`       | osu! API v2 (`users`, `scores/best`)       | `OSU_CLIENT_ID`, `OSU_CLIENT_SECRET`                              |
+| `/steam`     | Steam Web API (summary + recent + owned)   | `STEAM_API_KEY`                                                    |
+| `/spotify`   | Spotify `recently-played`                  | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` |
+| `/guestbook` | Cloudflare D1 (`GET` list / `POST` sign / `DELETE` admin) | `DB` binding, `GUESTBOOK_ADMIN_TOKEN` (delete only) |
 
-Responses are small, public, read-only JSON, edge-cached for `CACHE_SECONDS`
-(default 300). If a route's credentials are missing it returns `502` and the site
-quietly falls back to a plain outbound link — so you can ship one integration at
-a time.
+The proxy routes return small, public, read-only JSON, edge-cached for
+`CACHE_SECONDS` (default 300). If a route's credentials are missing it returns
+`502` and the site quietly falls back to a plain outbound link — so you can ship
+one integration at a time. The guestbook is never cached and returns `503` until
+its D1 database is wired up (below).
 
 GitHub stats and the weather readout need no key and are fetched by the browser
 directly; they are not part of this worker.
@@ -75,6 +77,35 @@ data only.
    ```
 
 The refresh token does not expire; you only redo this if you revoke access.
+
+### Guestbook (Cloudflare D1)
+
+1. Create the database and copy the printed `database_id` into
+   [`wrangler.toml`](./wrangler.toml) → `[[d1_databases]]`:
+   ```sh
+   npx wrangler d1 create profile-me-guestbook
+   ```
+2. Apply the schema:
+   ```sh
+   npx wrangler d1 migrations apply profile-me-guestbook --remote   # add --local for `wrangler dev`
+   ```
+3. Set an admin token (any long random string) so you can remove entries:
+   ```sh
+   npx wrangler secret put GUESTBOOK_ADMIN_TOKEN
+   ```
+4. `npx wrangler deploy`.
+
+Spam defence lives in the worker: a honeypot field, a minimum fill time, a
+per-IP rate limit (3/hour — IPs are stored only as a salted hash), a length cap
+and a link block. Remove an entry with:
+
+```sh
+curl -X DELETE "$WORKER/guestbook?id=<uuid>" -H "Authorization: Bearer <GUESTBOOK_ADMIN_TOKEN>"
+```
+
+(The `id` isn't returned by the public `GET`; read it with
+`npx wrangler d1 execute profile-me-guestbook --remote --command \
+"SELECT id, name, created_at FROM guestbook ORDER BY created_at DESC LIMIT 20"`.)
 
 ## Local development
 
