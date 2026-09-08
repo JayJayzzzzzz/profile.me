@@ -1,11 +1,17 @@
-/** Build-time Open Graph image (1200×630) rendered to /og/index.png. */
+/**
+ * Build-time Open Graph image (1200×630) rendered to /og/index.png.
+ *
+ * This is the *fallback* card. The live one is served by the `og-image/` Vercel
+ * project and wired up via OG_IMAGE_URL in src/config.ts; this static image is
+ * only used when that URL is cleared or the endpoint is unreachable.
+ */
 import { OGImageRoute } from "astro-og-canvas";
 
 export const { getStaticPaths, GET } = await OGImageRoute({
   pages: {
     index: {
       title: "JayJayzzzzzz",
-      description: "IT apprentice · application development · Wiesbaden, Germany",
+      description: "all my links in one place · jayjayzzzzzz.me",
     },
   },
   getImageOptions: (_path, page: { title: string; description: string }) => ({

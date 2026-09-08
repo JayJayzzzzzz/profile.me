@@ -73,7 +73,7 @@ export const links: SocialLink[] = [
   },
   {
     name: "Spotify",
-    href: "https://open.spotify.com/",
+    href: "https://open.spotify.com/user/31ulvtbj2ik64vq3mn2hkgwhfqta",
     icon: "spotify",
     action: "spotify",
   },

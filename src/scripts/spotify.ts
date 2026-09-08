@@ -35,7 +35,7 @@ interface SpotifyData {
   top_artists: Artist[];
 }
 
-const FALLBACK = "https://open.spotify.com/";
+const FALLBACK = "https://open.spotify.com/user/31ulvtbj2ik64vq3mn2hkgwhfqta";
 let ticker = 0;
 
 export function initSpotify(): void {

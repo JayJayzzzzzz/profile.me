@@ -21,6 +21,17 @@ export const WORKER_ENDPOINT = "https://profile-me-proxy.jayjayzzzzzz.workers.de
 /** Cookieless analytics. Set to your GoatCounter site code, e.g. "jayjay". */
 export const GOATCOUNTER_CODE = "";
 
+/**
+ * Open Graph / link-preview image.
+ *
+ * Points at the dynamic card rendered on demand by the `og-image/` Vercel
+ * project (live Discord / Spotify / osu! / Steam, edge-cached ~90s — see
+ * og-image/README.md). Bump `?v=` when the card design changes to force
+ * scrapers to re-fetch. Set to "" to fall back to the static build-time image
+ * at `/og/index.png`.
+ */
+export const OG_IMAGE_URL = "https://jayjayzzzzzz-og.vercel.app/og.png?v=1";
+
 /** Home location — the clock, the inline weather readout and copy all use it. */
 export const LOCATION = {
   label: "Wiesbaden, Germany",
