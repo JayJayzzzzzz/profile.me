@@ -294,20 +294,21 @@ async function osu(env: Env): Promise<unknown> {
 }
 
 /** Shared across isolates so we hit osu!'s heavily rate-limited token
- *  endpoint about once a day, not once per cold isolate. */
-const OSU_TOKEN_CACHE_KEY = new Request("https://osu-token.internal/client-credentials");
+ *  endpoint about once a day, not once per cold isolate.
+ *
+ *  This can't use `caches.default` — that's a no-op on workers.dev
+ *  subdomains (only custom domains get a functional edge cache), which was
+ *  silently forcing a fresh token request — and a 429 from osu! — on almost
+ *  every call. D1 is durable regardless of domain. */
+const OSU_TOKEN_KV_KEY = "osu_token";
 
 async function osuAccessToken(env: Env): Promise<string> {
   if (osuToken && osuToken.expires > Date.now() + 60_000) return osuToken.value;
 
-  const cache = caches.default;
-  const cached = await cache.match(OSU_TOKEN_CACHE_KEY);
-  if (cached) {
-    const saved = (await cached.json()) as { value: string; expires: number };
-    if (saved.expires > Date.now() + 60_000) {
-      osuToken = saved;
-      return saved.value;
-    }
+  const saved = await kvGet(env, OSU_TOKEN_KV_KEY);
+  if (saved && saved.expires > Date.now() + 60_000) {
+    osuToken = saved;
+    return saved.value;
   }
 
   const res = await fetch("https://osu.ppy.sh/oauth/token", {
@@ -325,16 +326,29 @@ async function osuAccessToken(env: Env): Promise<string> {
   const body = (await res.json()) as any;
   const lifetime = body.expires_in ?? 3600;
   osuToken = { value: body.access_token, expires: Date.now() + lifetime * 1000 };
-  await cache.put(
-    OSU_TOKEN_CACHE_KEY,
-    new Response(JSON.stringify(osuToken), {
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": `public, max-age=${Math.max(60, Math.floor(lifetime - 600))}`,
-      },
-    }),
-  );
+  await kvPut(env, OSU_TOKEN_KV_KEY, osuToken, osuToken.expires);
   return osuToken.value;
+}
+
+/** Minimal durable key/value cache backed by D1's `kv_cache` table — a
+ *  stand-in for `caches.default`, which doesn't work on workers.dev. */
+async function kvGet(env: Env, key: string): Promise<{ value: string; expires: number } | null> {
+  if (!env.DB) return null;
+  const row = await env.DB.prepare(`SELECT value, expires FROM kv_cache WHERE key = ?`)
+    .bind(key)
+    .first<{ value: string; expires: number }>();
+  if (!row) return null;
+  return JSON.parse(row.value);
+}
+
+async function kvPut(env: Env, key: string, value: unknown, expires: number): Promise<void> {
+  if (!env.DB) return;
+  await env.DB.prepare(
+    `INSERT INTO kv_cache (key, value, expires) VALUES (?, ?, ?)
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, expires = excluded.expires`,
+  )
+    .bind(key, JSON.stringify(value), expires)
+    .run();
 }
 
 /* --- Steam ------------------------------------------------------------- */
