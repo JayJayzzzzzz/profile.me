@@ -21,14 +21,14 @@ interface OsuStats {
   ranked_score: number;
   level: { current: number; progress: number };
   grade_counts: Record<string, number> | null;
-  top_play: {
+  top_plays: {
     title: string;
     pp: number;
     accuracy: number;
     mods: string[];
     rank: string | null;
     url: string | null;
-  } | null;
+  }[];
 }
 
 const PROFILE_URL = `https://osu.ppy.sh/users/${OSU_USER_ID}`;
@@ -76,18 +76,22 @@ function render(d: OsuStats): string {
         .join("")}</div>`
     : "";
 
-  const top = d.top_play
+  const top = d.top_plays.length
     ? `<div class="panel-section">
-         <h3>Top play</h3>
-         <a class="panel-row" ${d.top_play.url ? `href="${d.top_play.url}" target="_blank" rel="noopener noreferrer"` : ""}>
-           <span class="panel-row-rank">${escapeHtml(d.top_play.rank ?? "")}</span>
+         <h3>Top plays</h3>
+         ${d.top_plays
+           .map(
+             (play) => `<a class="panel-row" ${play.url ? `href="${play.url}" target="_blank" rel="noopener noreferrer"` : ""}>
+           <span class="panel-row-rank">${escapeHtml(play.rank ?? "")}</span>
            <span class="panel-row-main">
-             <b>${escapeHtml(d.top_play.title)}</b>
-             <span>${d.top_play.pp} pp · ${(d.top_play.accuracy * 100).toFixed(2)}%${
-               d.top_play.mods.length ? ` · +${d.top_play.mods.join("")}` : ""
+             <b>${escapeHtml(play.title)}</b>
+             <span>${play.pp} pp · ${(play.accuracy * 100).toFixed(2)}%${
+               play.mods.length ? ` · +${play.mods.join("")}` : ""
              }</span>
            </span>
-         </a>
+         </a>`,
+           )
+           .join("")}
        </div>`
     : "";
 

@@ -253,14 +253,13 @@ async function osu(env: Env): Promise<unknown> {
   }).then(expectJson)) as any;
 
   const best = (await fetch(
-    `https://osu.ppy.sh/api/v2/users/${id}/scores/best?mode=osu&limit=1`,
+    `https://osu.ppy.sh/api/v2/users/${id}/scores/best?mode=osu&limit=5`,
     { headers: auth },
   )
     .then((r) => (r.ok ? r.json() : []))
     .catch(() => [])) as any[];
 
   const s = user.statistics ?? {};
-  const top = best[0];
 
   return {
     username: user.username,
@@ -278,18 +277,16 @@ async function osu(env: Env): Promise<unknown> {
     ranked_score: s.ranked_score ?? 0,
     level: s.level ?? { current: 0, progress: 0 },
     grade_counts: s.grade_counts ?? null,
-    top_play: top
-      ? {
-          title: `${top.beatmapset?.artist ?? ""} - ${top.beatmapset?.title ?? ""} [${
-            top.beatmap?.version ?? ""
-          }]`,
-          pp: Math.round(top.pp ?? 0),
-          accuracy: top.accuracy ?? 0,
-          mods: top.mods ?? [],
-          rank: top.rank ?? null,
-          url: top.beatmap?.url ?? null,
-        }
-      : null,
+    top_plays: best.map((top) => ({
+      title: `${top.beatmapset?.artist ?? ""} - ${top.beatmapset?.title ?? ""} [${
+        top.beatmap?.version ?? ""
+      }]`,
+      pp: Math.round(top.pp ?? 0),
+      accuracy: top.accuracy ?? 0,
+      mods: top.mods ?? [],
+      rank: top.rank ?? null,
+      url: top.beatmap?.url ?? null,
+    })),
   };
 }
 
