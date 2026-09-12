@@ -76,10 +76,13 @@ function render(d: OsuStats): string {
         .join("")}</div>`
     : "";
 
-  const top = d.top_plays.length
+  // Guards against a stale edge-cached response (old schema) still being
+  // served from some Cloudflare PoP right after a deploy that changes shape.
+  const plays = Array.isArray(d.top_plays) ? d.top_plays : [];
+  const top = plays.length
     ? `<div class="panel-section">
          <h3>Top plays</h3>
-         ${d.top_plays
+         ${plays
            .map(
              (play) => `<a class="panel-row" ${play.url ? `href="${play.url}" target="_blank" rel="noopener noreferrer"` : ""}>
            <span class="panel-row-rank">${escapeHtml(play.rank ?? "")}</span>
