@@ -809,6 +809,8 @@ function loop(t: number): void {
 export function initCursor(): void {
   if (matchMedia("(pointer: coarse)").matches) return;
 
+  document.documentElement.classList.add("has-custom-cursor");
+
   host = document.createElement("div");
   host.id = "cursor-host";
   fx = document.createElement("canvas");

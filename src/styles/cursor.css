@@ -4,6 +4,25 @@
  * 2-D layers, the cursor heads, and the little picker in the top-right corner.
  */
 
+/* Native OS cursor: hidden everywhere while the custom cursor+trail is
+ * running (JS adds .has-custom-cursor to <html> once it mounts, so it never
+ * vanishes if JS fails to load), so the custom cursor is the only thing
+ * visible. !important beats every explicit `cursor: pointer` scattered across
+ * the other stylesheets. It comes back the instant a modal panel opens
+ * (body.panel-open / body.dp-open), which is exactly when the custom cursor
+ * hides itself — see panel.css / discord-profile.css.
+ */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+body.panel-open,
+body.panel-open *,
+body.dp-open,
+body.dp-open * {
+  cursor: auto !important;
+}
+
 #cursor-fxb {
   position: fixed;
   inset: 0;
